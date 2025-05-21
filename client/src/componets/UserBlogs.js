@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Blogs from "./Blogs";
@@ -54,20 +53,23 @@ const UserBlogs = () => {
   const id = localStorage.getItem("userId");
 
   const sendRequest = async () => {
-    const res = await axios
-      .get(`${config.BASE_URL}/api/blogs/user/${id}`)
-      .catch((err) => console.log(err));
-    const data = await res?.data;
-    return data;
+    try {
+      const res = await axios.get(`${config.BASE_URL}/api/blogs/user/${id}`);
+      return res.data;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   };
 
   useEffect(() => {
     sendRequest().then((data) => setUser(data?.user));
+    // eslint-disable-next-line
   }, []);
 
   const handleDelete = (blogId) => {
     axios.delete(`${config.BASE_URL}/api/blogs/${blogId}`).then(() => {
-      sendRequest().then((data) => setUser(data.user));
+      sendRequest().then((data) => setUser(data?.user));
     });
   };
 
@@ -75,22 +77,22 @@ const UserBlogs = () => {
     <div className={classes.container}>
       {user &&
         user.blogs &&
-        user.blogs.map((blog, index) => (
-          <div key={index} className={classes.blogContainer}>
+        user.blogs.map((blog) => (
+          <div key={blog._id} className={classes.blogContainer}>
             <Blogs
               id={blog._id}
               isUser={true}
               title={blog.title}
-              description={blog.description}
-              imageURL={blog.image}
-              userName={user.name}
+              desc={blog.description}
+              img={blog.image}
+              user={user.name}
             />
             <img
               className={classes.blogImage}
               src={blog.image}
               alt={blog.title}
             />
-            <DeleteButton blogId={blog._id} onDelete={handleDelete} />
+            <DeleteButton blogId={blog._id} onDelete={() => handleDelete(blog._id)} />
           </div>
         ))}
     </div>

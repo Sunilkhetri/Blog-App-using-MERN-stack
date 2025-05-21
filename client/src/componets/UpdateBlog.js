@@ -1,40 +1,80 @@
-import React from 'react'
+import React, { useState } from "react";
+import { Box, Button, InputLabel, TextField, Typography } from "@mui/material";
+
+const labelStyles = { mb: 1, mt: 2, fontSize: "20px", fontWeight: "bold" };
 
 const UpdateBlog = () => {
-  return (
-    <>
-        <form>
-  <div class="form-group">
-    <label for="exampleFormControlInput1">Email address</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlSelect1">Example select</label>
-    <select class="form-control" id="exampleFormControlSelect1">
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlSelect2">Example multiple select</label>
-    <select multiple class="form-control" id="exampleFormControlSelect2">
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlTextarea1">Example textarea</label>
-    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-  </div>
-</form>
-    </>
-  )
-}
+  const [inputs, setInputs] = useState({
+    title: "",
+    description: "",
+    imageURL: "",
+  });
 
-export default UpdateBlog
+  const handleChange = (e) => {
+    setInputs((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // TODO: Add your update logic here (API call)
+    console.log(inputs);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Box
+        borderRadius={10}
+        boxShadow="10px 10px 20px #ccc"
+        padding={3}
+        margin={"auto"}
+        marginTop={3}
+        display="flex"
+        flexDirection={"column"}
+        width={"80%"}
+      >
+        <Typography fontWeight="bold" padding={3} color="grey" variant="h4" textAlign="center">
+          Update Blog
+        </Typography>
+        <InputLabel sx={labelStyles}>Title</InputLabel>
+        <TextField
+          name="title"
+          onChange={handleChange}
+          value={inputs.title}
+          margin="normal"
+          variant="outlined"
+        />
+        <InputLabel sx={labelStyles}>Description</InputLabel>
+        <TextField
+          name="description"
+          onChange={handleChange}
+          value={inputs.description}
+          margin="normal"
+          variant="outlined"
+          multiline
+          rows={4}
+        />
+        <InputLabel sx={labelStyles}>Image URL</InputLabel>
+        <TextField
+          name="imageURL"
+          onChange={handleChange}
+          value={inputs.imageURL}
+          margin="normal"
+          variant="outlined"
+        />
+        <Button
+          sx={{ mt: 2, borderRadius: 4 }}
+          variant="contained"
+          color="primary"
+          type="submit"
+        >
+          Update
+        </Button>
+      </Box>
+    </form>
+  );
+};
+
+export default UpdateBlog;

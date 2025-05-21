@@ -8,8 +8,8 @@ import config from "../config";
 
 const Login = () => {
   const location = useLocation();
-  const naviagte = useNavigate();
-  const dispath = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { isSignupButtonPressed } = location.state || {};
 
   const [inputs, setInputs] = useState({
@@ -18,47 +18,49 @@ const Login = () => {
     password: "",
   });
   const [isSignup, setIsSignup] = useState(isSignupButtonPressed || false);
+
   const handleChange = (e) => {
     setInputs((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
+
   useEffect(() => {
     setIsSignup(isSignupButtonPressed);
   }, [isSignupButtonPressed]);
+
   const sendRequest = async (type = "login") => {
-    console.log("inside send req");
-    console.log(`${config.BASE_URL}/api/users/${type}`);
-    const res = await axios
-      .post(`${config.BASE_URL}/api/users/${type}`, {
+    try {
+      const res = await axios.post(`${config.BASE_URL}/api/users/${type}`, {
         name: inputs.name,
         email: inputs.email,
         password: inputs.password,
-      })
-      .catch((err) => console.log(err));
-
-    const data = await res.data;
-    console.log("return");
-    console.log(data);
-    return data;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(inputs);
-    if (isSignup) {
-      sendRequest("signup")
-        .then((data) => localStorage.setItem("userId", data.user._id))
-        .then(() => dispath(authActions.login()))
-        .then(() => naviagte("/blogs"));
-    } else {
-      sendRequest()
-        .then((data) => localStorage.setItem("userId", data.user._id))
-        .then(() => dispath(authActions.login()))
-        .then(() => naviagte("/blogs"));
+      });
+      return res.data;
+    } catch (err) {
+      console.log(err);
+      return null;
     }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let data;
+    if (isSignup) {
+      data = await sendRequest("signup");
+    } else {
+      data = await sendRequest();
+    }
+    if (data && data.user && data.user._id) {
+      localStorage.setItem("userId", data.user._id);
+      dispatch(authActions.login());
+      navigate("/blogs");
+    } else {
+      alert("Login/Signup failed. Please check your credentials.");
+    }
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -85,12 +87,12 @@ const Login = () => {
               placeholder="Name"
               margin="normal"
             />
-          )}{" "}
+          )}
           <TextField
             name="email"
             onChange={handleChange}
             value={inputs.email}
-            type={"email"}
+            type="email"
             placeholder="Email"
             margin="normal"
           />
@@ -98,7 +100,7 @@ const Login = () => {
             name="password"
             onChange={handleChange}
             value={inputs.password}
-            type={"password"}
+            type="password"
             placeholder="Password"
             margin="normal"
           />

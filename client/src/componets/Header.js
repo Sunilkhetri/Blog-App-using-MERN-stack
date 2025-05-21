@@ -1,5 +1,5 @@
-import React, { useReducer } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { authActions, setDarkmode } from "../store";
 import {
   AppBar,
@@ -13,14 +13,12 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import { useState } from "react";
 import { lightTheme, darkTheme } from "../utils/theme";
 
 const Header = () => {
-  const dispath = useDispatch();
+  const dispatch = useDispatch();
   const isDark = useSelector((state) => state.theme.isDarkmode);
   const theme = isDark ? darkTheme : lightTheme;
-
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   const [value, setValue] = useState();
@@ -46,19 +44,16 @@ const Header = () => {
               onChange={(e, val) => setValue(val)}
             >
               <Tab
-                //className={classes.font}
                 LinkComponent={Link}
                 to="/blogs"
                 label="All Blogs"
               />
               <Tab
-                //className={classes.font}
                 LinkComponent={Link}
                 to="/myBlogs"
                 label="My Blogs"
               />
               <Tab
-                //className={classes.font}
                 LinkComponent={Link}
                 to="/blogs/add"
                 label="Add Blog"
@@ -69,7 +64,6 @@ const Header = () => {
         <Box display="flex" marginLeft="auto">
           {!isLoggedIn && (
             <>
-              {" "}
               <Button
                 onClick={handleLoginClick}
                 sx={{
@@ -97,7 +91,7 @@ const Header = () => {
 
           {isLoggedIn && (
             <Button
-              onClick={() => dispath(authActions.logout())}
+              onClick={() => dispatch(authActions.logout())}
               LinkComponent={Link}
               to="/login"
               variant="contained"
@@ -110,7 +104,7 @@ const Header = () => {
           <div
             onClick={(e) => {
               e.preventDefault();
-              dispath(setDarkmode(!isDark));
+              dispatch(setDarkmode(!isDark));
             }}
             style={{
               alignContent: "center",

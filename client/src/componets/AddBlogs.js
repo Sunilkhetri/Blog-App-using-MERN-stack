@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useStyles } from "./utils";
 
 const labelStyles = { mb: 1, mt: 2, fontSize: "24px", fontWeight: "bold" };
+
 const AddBlogs = () => {
   const classes = useStyles();
   const navigate = useNavigate();
@@ -15,31 +16,39 @@ const AddBlogs = () => {
     description: "",
     imageURL: "",
   });
+
   const handleChange = (e) => {
     setInputs((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
+
   const sendRequest = async () => {
-    const res = await axios
-      .post(`${config.BASE_URL}/api/blogs/add`, {
+    try {
+      const res = await axios.post(`${config.BASE_URL}/api/blogs/add`, {
         title: inputs.title,
         desc: inputs.description,
         img: inputs.imageURL,
         user: localStorage.getItem("userId"),
-      })
-      .catch((err) => console.log(err));
-    const data = await res.data;
-    return data;
+      });
+      return res.data;
+    } catch (err) {
+      console.error("Error while sending request:", err);
+      return null;
+    }
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(inputs);
-    sendRequest()
-      .then((data) => console.log(data))
-      .then(() => navigate("/blogs"));
+    const data = await sendRequest();
+    if (data) {
+      navigate("/blogs");
+    } else {
+      alert("Something went wrong. Please try again.");
+    }
   };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -81,8 +90,15 @@ const AddBlogs = () => {
             name="description"
             onChange={handleChange}
             minRows={10}
-            margin="auto"
-            variant="outlined"
+            style={{
+              margin: "auto",
+              width: "100%",
+              fontSize: "16px",
+              padding: "8.5px 14px",
+              borderRadius: "4px",
+              borderColor: "#c4c4c4",
+              fontFamily: "inherit",
+            }}
             value={inputs.description}
           />
           <InputLabel className={classes.font} sx={labelStyles}>
